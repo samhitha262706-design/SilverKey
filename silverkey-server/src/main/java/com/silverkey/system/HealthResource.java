@@ -1,4 +1,4 @@
-package com.silverkey.resources;
+package com.silverkey.system;
 
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.Path;

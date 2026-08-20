@@ -8,3 +8,5 @@ target/
 # OS
 .DS_Store
 Thumbs.db
+
+silverkey-server/src/main/resources/config-local.yml
