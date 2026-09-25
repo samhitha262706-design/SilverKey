@@ -3,8 +3,14 @@ package com.silverkey;
 import com.silverkey.auth.AuthResource;
 import com.silverkey.config.DatabaseFactory;
 import com.silverkey.exception.GlobalExceptionMapper;
+import com.silverkey.organization.OrganizationRepository;
+import com.silverkey.organization.OrganizationResource;
+import com.silverkey.organization.OrganizationService;
 import com.silverkey.security.JwtAuthFilter;
 import com.silverkey.security.JwtService;
+import com.silverkey.tenant.TenantRepository;
+import com.silverkey.tenant.TenantResource;
+import com.silverkey.tenant.TenantService;
 import com.silverkey.user.UserRepository;
 import com.silverkey.user.UserResource;
 import com.silverkey.user.UserService;
@@ -31,9 +37,35 @@ public class SilverKeyApplication extends Application<SilverKeyConfiguration> {
     public void run(SilverKeyConfiguration configuration,
                     Environment environment) {
 
+        environment.getObjectMapper()
+                .findAndRegisterModules();
+
         environment.jersey().register(new HealthResource());
 
         Jdbi jdbi = DatabaseFactory.build(configuration, environment);
+
+        OrganizationRepository organizationRepository =
+                jdbi.onDemand(OrganizationRepository.class);
+
+        OrganizationService organizationService =
+                new OrganizationService(organizationRepository);
+
+        environment.jersey().register(
+                new OrganizationResource(organizationService)
+        );
+
+        TenantRepository tenantRepository =
+                jdbi.onDemand(TenantRepository.class);
+
+        TenantService tenantService =
+                new TenantService(
+                        tenantRepository,
+                        organizationRepository
+                );
+
+        environment.jersey().register(
+                new TenantResource(tenantService)
+        );
 
         JwtService jwtService = new JwtService(configuration.getJwt());
         environment.jersey().register(
