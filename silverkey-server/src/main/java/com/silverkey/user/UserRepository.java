@@ -2,7 +2,7 @@ package com.silverkey.user;
 
 import org.jdbi.v3.sqlobject.config.RegisterBeanMapper;
 import org.jdbi.v3.sqlobject.customizer.BindBean;
-import org.jdbi.v3.sqlobject.customizer.Bind;   
+import org.jdbi.v3.sqlobject.customizer.Bind;
 import org.jdbi.v3.sqlobject.statement.SqlQuery;
 import org.jdbi.v3.sqlobject.statement.SqlUpdate;
 
@@ -15,6 +15,7 @@ public interface UserRepository {
     @SqlUpdate("""
         INSERT INTO users (
             id,
+            tenant_id,
             username,
             email,
             password_hash,
@@ -22,6 +23,7 @@ public interface UserRepository {
         )
         VALUES (
             :id,
+            :tenantId,
             :username,
             :email,
             :passwordHash,
@@ -31,18 +33,28 @@ public interface UserRepository {
     void save(@BindBean User user);
 
     @SqlQuery("""
-        SELECT *
+        SELECT
+            id,
+            tenant_id AS tenantId,
+            username,
+            email,
+            password_hash AS passwordHash,
+            created_at AS createdAt
         FROM users
         WHERE id = :id
         """)
     Optional<User> findById(@Bind("id") UUID id);
 
     @SqlQuery("""
-        SELECT *
+        SELECT
+            id,
+            tenant_id AS tenantId,
+            username,
+            email,
+            password_hash AS passwordHash,
+            created_at AS createdAt
         FROM users
         WHERE email = :email
         """)
     Optional<User> findByEmail(@Bind("email") String email);
-
-
 }

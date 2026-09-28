@@ -43,6 +43,7 @@ public class UserResource {
 
         UserResponse response = new UserResponse(
                 user.getId(),
+                user.getTenantId(),
                 user.getUsername(),
                 user.getEmail()
         );

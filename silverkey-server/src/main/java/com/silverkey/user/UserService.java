@@ -1,6 +1,9 @@
 package com.silverkey.user;
+
 import com.silverkey.exception.BusinessException;
 import com.silverkey.security.JwtService;
+import com.silverkey.tenant.Tenant;
+import com.silverkey.tenant.TenantRepository;
 import jakarta.ws.rs.core.Response;
 import org.mindrot.jbcrypt.BCrypt;
 
@@ -11,12 +14,16 @@ public class UserService {
 
     private final UserRepository userRepository;
     private final JwtService jwtService;
+    private final TenantRepository tenantRepository;
 
     public UserService(
-            UserRepository userRepository, JwtService jwtService
+            UserRepository userRepository,
+            JwtService jwtService,
+            TenantRepository tenantRepository
     ) {
         this.userRepository = userRepository;
         this.jwtService = jwtService;
+        this.tenantRepository = tenantRepository;
     }
 
     public void register(RegisterUserRequest request) {
@@ -28,9 +35,18 @@ public class UserService {
             );
         }
 
+        Tenant tenant = tenantRepository.findById(request.getTenantId())
+                .orElseThrow(() ->
+                        new BusinessException(
+                                "Tenant not found.",
+                                Response.Status.NOT_FOUND
+                        )
+                );
+
         User user = new User();
 
         user.setId(UUID.randomUUID());
+        user.setTenantId(tenant.getId());
         user.setUsername(request.getUsername());
         user.setEmail(request.getEmail());
 
@@ -40,7 +56,6 @@ public class UserService {
         );
 
         user.setPasswordHash(passwordHash);
-
         user.setCreatedAt(LocalDateTime.now());
 
         userRepository.save(user);
@@ -67,6 +82,7 @@ public class UserService {
                     Response.Status.UNAUTHORIZED
             );
         }
+
         return jwtService.generateToken(user.getId());
     }
 

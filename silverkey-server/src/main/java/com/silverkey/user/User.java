@@ -6,6 +6,7 @@ import java.util.UUID;
 public class User {
 
     private UUID id;
+    private UUID tenantId;
     private String username;
     private String email;
     private String passwordHash;
@@ -15,12 +16,14 @@ public class User {
     }
 
     public User(UUID id,
+                UUID tenantId,
                 String username,
                 String email,
                 String passwordHash,
                 LocalDateTime createdAt) {
 
         this.id = id;
+        this.tenantId = tenantId;
         this.username = username;
         this.email = email;
         this.passwordHash = passwordHash;
@@ -33,6 +36,14 @@ public class User {
 
     public void setId(UUID id) {
         this.id = id;
+    }
+
+    public UUID getTenantId() {
+        return tenantId;
+    }
+
+    public void setTenantId(UUID tenantId) {
+        this.tenantId = tenantId;
     }
 
     public String getUsername() {

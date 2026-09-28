@@ -76,8 +76,11 @@ public class SilverKeyApplication extends Application<SilverKeyConfiguration> {
                 jdbi.onDemand(UserRepository.class);
 
         UserService userService =
-                new UserService(userRepository, jwtService);
-
+                new UserService(
+                        userRepository,
+                        jwtService,
+                        tenantRepository
+                );
         UserResource userResource = new UserResource(userService);
 
         AuthResource authResource = new AuthResource(userService);
