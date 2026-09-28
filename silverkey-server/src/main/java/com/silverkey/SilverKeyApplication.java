@@ -6,6 +6,9 @@ import com.silverkey.exception.GlobalExceptionMapper;
 import com.silverkey.organization.OrganizationRepository;
 import com.silverkey.organization.OrganizationResource;
 import com.silverkey.organization.OrganizationService;
+import com.silverkey.permission.PermissionRepository;
+import com.silverkey.permission.PermissionResource;
+import com.silverkey.permission.PermissionService;
 import com.silverkey.role.RoleRepository;
 import com.silverkey.role.RoleResource;
 import com.silverkey.role.RoleService;
@@ -81,6 +84,16 @@ public class SilverKeyApplication extends Application<SilverKeyConfiguration> {
 
         environment.jersey().register(
                 new RoleResource(roleService)
+        );
+
+        PermissionRepository permissionRepository =
+                jdbi.onDemand(PermissionRepository.class);
+
+        PermissionService permissionService =
+                new PermissionService(permissionRepository);
+
+        environment.jersey().register(
+                new PermissionResource(permissionService)
         );
 
         JwtService jwtService = new JwtService(configuration.getJwt());
