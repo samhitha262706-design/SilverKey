@@ -9,9 +9,7 @@ import com.silverkey.organization.OrganizationService;
 import com.silverkey.permission.PermissionRepository;
 import com.silverkey.permission.PermissionResource;
 import com.silverkey.permission.PermissionService;
-import com.silverkey.role.RoleRepository;
-import com.silverkey.role.RoleResource;
-import com.silverkey.role.RoleService;
+import com.silverkey.role.*;
 import com.silverkey.security.JwtAuthFilter;
 import com.silverkey.security.JwtService;
 import com.silverkey.tenant.TenantRepository;
@@ -94,6 +92,20 @@ public class SilverKeyApplication extends Application<SilverKeyConfiguration> {
 
         environment.jersey().register(
                 new PermissionResource(permissionService)
+        );
+
+        RolePermissionRepository rolePermissionRepository =
+                jdbi.onDemand(RolePermissionRepository.class);
+
+        RolePermissionService rolePermissionService =
+                new RolePermissionService(
+                        rolePermissionRepository,
+                        roleRepository,
+                        permissionRepository
+                );
+
+        environment.jersey().register(
+                new RolePermissionResource(rolePermissionService)
         );
 
         JwtService jwtService = new JwtService(configuration.getJwt());
