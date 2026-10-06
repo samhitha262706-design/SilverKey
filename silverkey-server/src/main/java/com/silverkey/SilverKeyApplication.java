@@ -15,9 +15,7 @@ import com.silverkey.security.JwtService;
 import com.silverkey.tenant.TenantRepository;
 import com.silverkey.tenant.TenantResource;
 import com.silverkey.tenant.TenantService;
-import com.silverkey.user.UserRepository;
-import com.silverkey.user.UserResource;
-import com.silverkey.user.UserService;
+import com.silverkey.user.*;
 import io.dropwizard.core.Application;
 import io.dropwizard.core.setup.Bootstrap;
 import io.dropwizard.core.setup.Environment;
@@ -125,6 +123,19 @@ public class SilverKeyApplication extends Application<SilverKeyConfiguration> {
         UserResource userResource = new UserResource(userService);
 
         AuthResource authResource = new AuthResource(userService);
+        UserRoleRepository userRoleRepository =
+                jdbi.onDemand(UserRoleRepository.class);
+
+        UserRoleService userRoleService =
+                new UserRoleService(
+                        userRoleRepository,
+                        userRepository,
+                        roleRepository
+                );
+
+        environment.jersey().register(
+                new UserRoleResource(userRoleService)
+        );
 
         environment.jersey().register(authResource);
 
