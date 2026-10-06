@@ -12,6 +12,8 @@ import com.silverkey.permission.PermissionService;
 import com.silverkey.role.*;
 import com.silverkey.security.JwtAuthFilter;
 import com.silverkey.security.JwtService;
+import com.silverkey.security.PermissionAuthorizationFilter;
+import com.silverkey.security.PermissionChecker;
 import com.silverkey.tenant.TenantRepository;
 import com.silverkey.tenant.TenantResource;
 import com.silverkey.tenant.TenantService;
@@ -136,6 +138,19 @@ public class SilverKeyApplication extends Application<SilverKeyConfiguration> {
         environment.jersey().register(
                 new UserRoleResource(userRoleService)
         );
+
+        PermissionChecker permissionChecker =
+                new PermissionChecker(
+                        userRoleRepository,
+                        rolePermissionRepository,
+                        permissionRepository
+                );
+
+        environment.jersey().register(
+                new PermissionAuthorizationFilter(permissionChecker)
+        );
+
+
 
         environment.jersey().register(authResource);
 

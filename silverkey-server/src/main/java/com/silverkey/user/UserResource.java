@@ -1,5 +1,6 @@
 package com.silverkey.user;
 
+import com.silverkey.security.RequiresPermission;
 import jakarta.validation.Valid;
 import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.GET;
@@ -35,8 +36,8 @@ public class UserResource {
 
     @GET
     @Path("/me")
+    @RequiresPermission("USER_READ")
     public Response me(@Context ContainerRequestContext requestContext) {
-
         UUID userId = (UUID) requestContext.getProperty("userId");
 
         User user = userService.getUserById(userId);

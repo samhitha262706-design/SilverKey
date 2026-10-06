@@ -1,5 +1,7 @@
 package com.silverkey.security;
 
+import jakarta.annotation.Priority;
+import jakarta.ws.rs.Priorities;
 import jakarta.ws.rs.container.ContainerRequestContext;
 import jakarta.ws.rs.container.ContainerRequestFilter;
 import jakarta.ws.rs.core.Response;
@@ -9,6 +11,7 @@ import java.io.IOException;
 import java.util.UUID;
 
 @Provider
+@Priority(Priorities.AUTHENTICATION)
 public class JwtAuthFilter implements ContainerRequestFilter {
 
     private final JwtService jwtService;
