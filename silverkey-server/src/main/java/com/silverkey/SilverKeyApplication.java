@@ -1,6 +1,9 @@
 package com.silverkey;
 
+import com.silverkey.audit.AuditLogRepository;
+import com.silverkey.audit.AuditLogService;
 import com.silverkey.auth.AuthResource;
+import com.silverkey.auth.RefreshTokenRepository;
 import com.silverkey.config.DatabaseFactory;
 import com.silverkey.exception.GlobalExceptionMapper;
 import com.silverkey.organization.OrganizationRepository;
@@ -116,17 +119,29 @@ public class SilverKeyApplication extends Application<SilverKeyConfiguration> {
         UserRepository userRepository =
                 jdbi.onDemand(UserRepository.class);
 
+        RefreshTokenRepository refreshTokenRepository =
+                jdbi.onDemand(RefreshTokenRepository.class);
+
+        AuditLogRepository auditLogRepository =
+                jdbi.onDemand(AuditLogRepository.class);
+
+        AuditLogService auditLogService =
+                new AuditLogService(auditLogRepository);
+
         UserService userService =
                 new UserService(
                         userRepository,
                         jwtService,
-                        tenantRepository
+                        tenantRepository,
+                        refreshTokenRepository,
+                        auditLogService
                 );
         UserResource userResource = new UserResource(userService);
 
         AuthResource authResource = new AuthResource(userService);
         UserRoleRepository userRoleRepository =
                 jdbi.onDemand(UserRoleRepository.class);
+
 
         UserRoleService userRoleService =
                 new UserRoleService(

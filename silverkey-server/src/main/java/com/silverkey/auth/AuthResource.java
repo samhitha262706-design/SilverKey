@@ -24,7 +24,17 @@ public class AuthResource {
     @Path("/login")
     public Response login(@Valid LoginRequest request) {
 
-        String accessToken = userService.login(request);
+        LoginResponse response = userService.login(request);
+
+        return Response.ok(response).build();
+    }
+
+    @POST
+    @Path("/refresh")
+    public Response refresh(@Valid RefreshTokenRequest request) {
+
+        String accessToken =
+                userService.refreshAccessToken(request.getRefreshToken());
 
         return Response.ok()
                 .entity(new LoginResponse(accessToken))
